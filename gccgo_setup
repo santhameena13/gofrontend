@@ -1,0 +1,64 @@
+gccgo
+======
+gccgo is a compiler for the Go language. It is the frontend for GCC, the GNU compiler.
+ 
+(Note: gccgo compilation fails on Darwin https://github.com/golang/go/issues/463 )
+
+Steps to install a GCC binary release to include Go support 
+
+Prerequisites:
+
+Gold:
+On x86 GNU/Linux systems the gccgo compiler requires using the gold linker version 2.22 or later.
+Dependencies: flex and bison
+To build gold, build the GNU binutils, using the option --enable-gold=default
+Download binutils https://ftp.gnu.org/gnu/binutils/ 
+The Binutils documentation recommends building Binutils in a dedicated build directory:
+
+mkdir binutils-objdir
+cd binutils-objdir
+../src/configure --enable-gold=default 	\
+				--prefix=/opt/gold
+			 	--enable-plugins    \
+             	--enable-shared     \
+            	--disable-werror    \
+             	--enable-64-bit-bfd \
+             	--with-system-zlib
+make
+make install
+
+GCC has a number of other prerequisites. https://gcc.gnu.org/install/prerequisites.html They can be easily downloaded and installed using the script /download_prerequisites in the GCC source
+	./contrib/download_prerequisites
+
+Build command:
+Once the dependencies are installed checkout gccgo source from svn. The build and install sequence is as follows
+
+svn checkout svn://gcc.gnu.org/svn/gcc/branches/gccgo gccgo
+mkdir objdir
+cd objdir
+../gccgo/configure --prefix=/opt/gccgo --enable-languages=c,c++,go --with-ld=/opt/gold/bin/ld
+make
+make install
+
+Using gccgo:
+Set the LD_LIBRARY_PATH environment variable to the directory where libgo.so is found. (/opt/gccgo/lib64)
+
+To compile a file:
+gccgo -c hello.go
+
+This creates the hello.o object file. To link to create an executable:
+	gccgo -o hello.o
+  
+To run the resulting file:
+	./hello
+
+
+
+
+ 
+
+
+
+
+
+
